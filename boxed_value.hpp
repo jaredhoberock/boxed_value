@@ -105,7 +105,21 @@ class boxed_value
     }
 
   private:
-    agency::detail::unique_ptr<T,agency::detail::deleter<allocator_type>> data_;
+    struct deleter
+    {
+      __AGENCY_ANNOTATION
+      void operator()(T* ptr) const
+      {
+        // XXX should use allocator_traits::destroy()
+        ptr->~T();
+
+        // deallocate
+        allocator_type alloc;
+        alloc.deallocate(ptr, 1);
+      }
+    };
+
+    agency::detail::unique_ptr<T,deleter> data_;
 };
 
 
