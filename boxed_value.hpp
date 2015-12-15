@@ -45,17 +45,17 @@ class boxed_value
     using allocator_type = typename std::allocator_traits<Alloc>::template rebind_alloc<T>;
     using value_type = typename allocator_type::value_type;
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value()
       : boxed_value(value_type{})
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value(const boxed_value& other)
       : boxed_value(other.value())
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value(boxed_value&& other)
       : boxed_value(std::move(other.value()))
     {}
@@ -64,30 +64,30 @@ class boxed_value
              class = typename std::enable_if<
                std::is_constructible<T,Args&&...>::value
              >::type>
-    __AGENCY_ANNOTATION
+    __host__ __device__
     explicit boxed_value(Args... args)
       : data_(agency::detail::allocate_unique<T>(allocator_type(), std::forward<Args>(args)...))
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     value_type& value() &
     {
       return *data_;
     }
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     const value_type& value() const &
     {
       return *data_;
     }
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     value_type&& value() &&
     {
       return std::move(*data_);
     }
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     const value_type&& value() const &&
     {
       return std::move(*data_);
@@ -97,7 +97,7 @@ class boxed_value
              class = typename std::enable_if<
                std::is_assignable<value_type,U&&>::value
              >::type>
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value& operator=(U&& other)
     {
       value() = std::forward<U>(other);
@@ -107,7 +107,7 @@ class boxed_value
   private:
     struct deleter
     {
-      __AGENCY_ANNOTATION
+      __host__ __device__
       void operator()(T* ptr) const
       {
         // XXX should use allocator_traits::destroy()
@@ -131,17 +131,17 @@ class boxed_value<T,std::allocator<OtherT>>
     using allocator_type = std::allocator<T>;
     using value_type = typename allocator_type::value_type;
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value()
       : boxed_value(value_type{})
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value(const boxed_value& other)
       : boxed_value(other.value())
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value(boxed_value&& other)
       : boxed_value(std::move(other.value_))
     {}
@@ -150,18 +150,18 @@ class boxed_value<T,std::allocator<OtherT>>
              class = typename std::enable_if<
                std::is_constructible<T,Args&&...>::value
              >::type>
-    __AGENCY_ANNOTATION
+    __host__ __device__
     explicit boxed_value(Args&&... args)
       : value_(std::forward<Args>(args)...)
     {}
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     value_type& value()
     {
       return value_;
     }
 
-    __AGENCY_ANNOTATION
+    __host__ __device__
     const value_type& value() const
     {
       return value_;
@@ -171,7 +171,7 @@ class boxed_value<T,std::allocator<OtherT>>
              class = typename std::enable_if<
                std::is_assignable<value_type,U&&>::value
              >::type>
-    __AGENCY_ANNOTATION
+    __host__ __device__
     boxed_value& operator=(U&& other)
     {
       value() = std::forward<U>(other);
@@ -184,7 +184,7 @@ class boxed_value<T,std::allocator<OtherT>>
 
 
 template<class T, class Alloc, class... Args>
-__AGENCY_ANNOTATION
+__host__ __device__
 boxed_value<T,Alloc> allocate_boxed(const Alloc&, Args&&... args)
 {
   return boxed_value<T,Alloc>(std::forward<Args>(args)...);
