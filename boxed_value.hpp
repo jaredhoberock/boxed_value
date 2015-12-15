@@ -66,7 +66,7 @@ class boxed_value
              >::type>
     __host__ __device__
     explicit boxed_value(Args... args)
-      : data_(agency::detail::allocate_unique<T>(allocator_type(), std::forward<Args>(args)...))
+      : data_(std::allocate_unique<T>(allocator_type(), std::forward<Args>(args)...))
     {}
 
     __host__ __device__
@@ -119,7 +119,8 @@ class boxed_value
       }
     };
 
-    agency::detail::unique_ptr<T,deleter> data_;
+    // XXX ought to eliminate unique_ptr if we're going to allow this to be __host__ __device__
+    std::unique_ptr<T,deleter> data_;
 };
 
 
