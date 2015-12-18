@@ -70,6 +70,20 @@ class boxed_value
     {}
 
     __host__ __device__
+    boxed_value& operator=(const boxed_value& other)
+    {
+      value() = other.value();
+      return *this;
+    }
+
+    __host__ __device__
+    boxed_value& operator=(boxed_value&& other)
+    {
+      value() = std::move(other.value());
+      return *this;
+    }
+
+    __host__ __device__
     value_type& value() &
     {
       return *data_;
